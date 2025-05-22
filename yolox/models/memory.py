@@ -10,13 +10,6 @@ from einops import rearrange
 
 class MemoryManager:
     def __init__(self, max_length=2, conf_thre=0.6, use_class_memory=True, ctx_dim=256):
-        """
-        Args:
-            max_length: 每类 memory 保留的最大上下文数量
-            conf_thre: 置信度阈值
-            use_class_memory: 是否为每个类别独立 memory
-            ctx_dim: context 特征维度，用于 concat 融合时 projection
-        """
         self.max_length = max_length
         self.conf_thre = conf_thre
         self.use_class_memory = use_class_memory
@@ -33,7 +26,7 @@ class MemoryManager:
         for i, detections in enumerate(detections_list):
             if detections is None or detections.numel() == 0:
                 continue
-            frame_ctx = context_flatten[i]  # 当前帧 context
+            frame_ctx = context_flatten[i]
             for det in detections:
                 cls_conf = det[5].item()
                 cls_id = int(det[6].item())
@@ -62,7 +55,6 @@ class MemoryManager:
             for d in det:
                 cls_id = int(d[6].item())
                 if cls_id in self.memory_bank and len(self.memory_bank[cls_id]) > 0:
-                    # 取最高置信度的 memory（heap[0] 是置信度最高的）
                     ctx = self.memory_bank[cls_id][0][2]
                     memory_contexts.append(ctx)
                     break
@@ -70,7 +62,7 @@ class MemoryManager:
                     memory_contexts.append(context_flatten[i])
                     break
         memory_ctx_tensor = torch.stack(memory_contexts)  # [B*L, H, W, C]
-        memory_ctx_tensor = memory_ctx_tensor.view(B, L, H, W, C)  # 还原成 [B, L, H, W, C]
+        memory_ctx_tensor = memory_ctx_tensor.view(B, L, H, W, C)
         return memory_ctx_tensor
 
     def fuse_context(self, current_context: torch.Tensor, memory_contexts: List[torch.Tensor], method='concat'):

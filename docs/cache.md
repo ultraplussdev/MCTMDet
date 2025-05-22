@@ -6,7 +6,7 @@ This page explains how to cache your own custom data with YOLOX.
 
 ## 0. Before you start
 
-**Step1** Clone this repo and follow the [README](../README.md) to install YOLOX.
+**Step1** Clone this repo and follow the [README](../YOLOX_README) to install YOLOX.
 
 **Stpe2** Read the [Training on custom data](./train_custom_data.md) tutorial to understand how to prepare your custom data.
 

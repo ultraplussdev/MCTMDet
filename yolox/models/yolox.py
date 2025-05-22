@@ -63,7 +63,6 @@ class CustomYOLOX(nn.Module):
         self.head = head
 
     def forward(self, current_frame, local_frames=None, global_frames=None,  targets=None):
-        # 单帧模式（推理或 FLOPs 计算）
         if local_frames is None or global_frames is None:
             backbone_outs = self.backbone(current_frame)
             fpn_outs = self.neck(backbone_outs)
@@ -135,7 +134,7 @@ class MambaYOLOX(nn.Module):
                     context_aug = self.memory.fuse_context(context_aug, memory_ctx)
                     del context_for_mem, coarse_feats, fpn_outs, coarse_outs
                     del detections, memory_ctx
-                    torch.cuda.empty_cache()  # 可选，但建议加上
+                    torch.cuda.empty_cache()
                 enhanced_feats = self.decoder(features, context_aug)
 
                 # 5. Neck + Head

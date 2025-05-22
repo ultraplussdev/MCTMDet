@@ -39,7 +39,7 @@ def get_yolox_version():
 
 
 def get_long_description():
-    with open("README.md", "r", encoding="utf-8") as f:
+    with open("YOLOX_README.md", "r", encoding="utf-8") as f:
         long_description = f.read()
     return long_description
 

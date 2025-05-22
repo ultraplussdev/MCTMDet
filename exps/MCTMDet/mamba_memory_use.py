@@ -30,7 +30,7 @@ class Exp(MyExp):
         self.output_dir = "./MCTMDet_outputs"
         self.use_aug = False
         self.use_aggregation = True
-        self.memory_enabled = False
+        self.memory_enabled = True
         self.memory_bank = {}  # {cls_id: [context]}
         self.base_channels = [int(256 * self.width), int(512 * self.width), int(1024 * self.width)]
         self.traj_linking=False

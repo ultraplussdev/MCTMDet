@@ -362,12 +362,10 @@ class Attention_BLHWC(nn.Module):
         return x
 
 def build_1d_sin_cos(n, dim):
-    """
-    构造 [n, dim] 的 1D sin-cos 位置编码，兼容奇偶维度。
-    """
+
     pe = torch.zeros(n, dim)
     position = torch.arange(n, dtype=torch.float32).unsqueeze(1)  # [n, 1]
-    div_term = torch.exp(torch.arange(0, (dim + 1) // 2, dtype=torch.float32) * -(math.log(10000.0) / dim))  # 足够长
+    div_term = torch.exp(torch.arange(0, (dim + 1) // 2, dtype=torch.float32) * -(math.log(10000.0) / dim))
 
     pe[:, 0::2] = torch.sin(position * div_term[:pe[:, 0::2].shape[1]])
     pe[:, 1::2] = torch.cos(position * div_term[:pe[:, 1::2].shape[1]])
@@ -376,22 +374,16 @@ def build_1d_sin_cos(n, dim):
 
 
 def get_3d_sin_cos_pos_embed(embed_dim, L, H, W):
-    """
-    构造一个 [L, H, W, embed_dim] 的3D sin-cos位置编码
-    思路：将 embed_dim 拆分给 L/H/W 三个方向；对每个方向做 1D sin-cos，然后在通道上拼接
-    你也可以改成 (1D 时间 + 2D 空间) 之类更复杂。
-    """
+
     c_l = embed_dim // 3
     c_h = embed_dim // 3
     c_w = embed_dim - c_l - c_h
 
-    # 分别构造 L, H, W 三个1D sin-cos编码
+
     pos_l = build_1d_sin_cos(L, c_l)  # [L, c_l]
     pos_h = build_1d_sin_cos(H, c_h)  # [H, c_h]
     pos_w = build_1d_sin_cos(W, c_w)  # [W, c_w]
 
-    # 扩展到 [L, H, W, c_l], [L,H,W,c_h], [L,H,W,c_w]
-    # pos_l => [L,c_l] => [L,1,1,c_l] => broadcast (L,H,W,c_l)
     pos_l = pos_l[:, None, None, :].expand(L, H, W, c_l)
     pos_h = pos_h[None, :, None, :].expand(L, H, W, c_h)
     pos_w = pos_w[None, None, :, :].expand(L, H, W, c_w)
